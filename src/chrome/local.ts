@@ -73,13 +73,17 @@ export default class LocalChrome implements Chrome {
   }
 
   private async connectToChrome(): Promise<Client> {
-    const {host, port, targetId = ''} = this.options.cdp
-    const target = await (targetId.length === 0
-      ? CDP.New({
-          port,
-          host,
-        })
-      : CDP.Activate({port, host, id: targetId}))
+    const {host, port} = this.options.cdp,
+      webSocketUrl = this.options.webSocketUrl || ''
+
+    if (webSocketUrl.length !== 0) {
+      return await CDP({target: webSocketUrl})
+    }
+
+    const target = await CDP.New({
+      port,
+      host,
+    })
     return await CDP({target, host, port})
   }
 

@@ -38,7 +38,6 @@ export interface CDPOptions {
   port?: number // 9222
   secure?: boolean // false
   closeTab?: boolean // true
-  targetId?: string // empty string
 }
 
 export interface ChromelessOptions {
@@ -54,6 +53,7 @@ export interface ChromelessOptions {
   launchChrome?: boolean // auto-launch chrome (local) `true`
   cdp?: CDPOptions
   remote?: RemoteOptions | boolean
+  webSocketUrl?: string
 }
 
 export interface Chrome {

@@ -123,21 +123,22 @@ var LocalChrome = /** @class */ (function () {
     };
     LocalChrome.prototype.connectToChrome = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, host, port, _b, targetId, target;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var _a, host, port, webSocketUrl, target;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        _a = this.options.cdp, host = _a.host, port = _a.port, _b = _a.targetId, targetId = _b === void 0 ? '' : _b;
-                        return [4 /*yield*/, (targetId.length === 0
-                                ? CDP.New({
-                                    port: port,
-                                    host: host,
-                                })
-                                : CDP.Activate({ port: port, host: host, id: targetId }))];
-                    case 1:
-                        target = _c.sent();
+                        _a = this.options.cdp, host = _a.host, port = _a.port, webSocketUrl = this.options.webSocketUrl || '';
+                        if (!(webSocketUrl.length !== 0)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, CDP({ target: webSocketUrl })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                    case 2: return [4 /*yield*/, CDP.New({
+                            port: port,
+                            host: host,
+                        })];
+                    case 3:
+                        target = _b.sent();
                         return [4 /*yield*/, CDP({ target: target, host: host, port: port })];
-                    case 2: return [2 /*return*/, _c.sent()];
+                    case 4: return [2 /*return*/, _b.sent()];
                 }
             });
         });

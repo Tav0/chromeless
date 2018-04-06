@@ -34,7 +34,6 @@ export interface CDPOptions {
     port?: number;
     secure?: boolean;
     closeTab?: boolean;
-    targetId?: string;
 }
 export interface ChromelessOptions {
     debug?: boolean;
@@ -49,6 +48,7 @@ export interface ChromelessOptions {
     launchChrome?: boolean;
     cdp?: CDPOptions;
     remote?: RemoteOptions | boolean;
+    webSocketUrl?: string;
 }
 export interface Chrome {
     process<T extends any>(command: Command): Promise<T>;

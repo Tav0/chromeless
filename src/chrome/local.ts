@@ -1,9 +1,9 @@
-import { Chrome, Command, ChromelessOptions, Client } from '../types'
+import {Chrome, Command, ChromelessOptions, Client} from '../types'
 import * as CDP from 'chrome-remote-interface'
-import { LaunchedChrome, launch } from 'chrome-launcher'
+import {LaunchedChrome, launch} from 'chrome-launcher'
 import LocalRuntime from './local-runtime'
-import { evaluate, setViewport } from '../util'
-import { DeviceMetrics } from '../types'
+import {evaluate, setViewport} from '../util'
+import {DeviceMetrics} from '../types'
 
 interface RuntimeClient {
   client: Client
@@ -26,16 +26,16 @@ export default class LocalChrome implements Chrome {
       ? await this.startChrome()
       : await this.connectToChrome()
 
-    const { viewport = {} as DeviceMetrics } = this.options
+    const {viewport = {} as DeviceMetrics} = this.options
     await setViewport(client, viewport as DeviceMetrics)
 
     const runtime = new LocalRuntime(client, this.options)
 
-    return { client, runtime }
+    return {client, runtime}
   }
 
   private async startChrome(): Promise<Client> {
-    const { port } = this.options.cdp
+    const {port} = this.options.cdp
     this.chromeInstance = await launch({
       logLevel: this.options.debug ? 'info' : 'silent',
       chromeFlags: [
@@ -69,20 +69,22 @@ export default class LocalChrome implements Chrome {
     const target = await CDP.New({
       port,
     })
-    return await CDP({ target, port })
+    return await CDP({target, port})
   }
 
   private async connectToChrome(): Promise<Client> {
-    const { host, port } = this.options.cdp
-    const target = await CDP.New({
-      port,
-      host,
-    })
-    return await CDP({ target, host, port })
+    const {host, port, targetId = ''} = this.options.cdp
+    const target = await (targetId.length === 0
+      ? CDP.New({
+          port,
+          host,
+        })
+      : CDP.Activate({port, host, id: targetId}))
+    return await CDP({target, host, port})
   }
 
   private async setViewport(client: Client) {
-    const { viewport = {} } = this.options
+    const {viewport = {}} = this.options
 
     const config: any = {
       deviceScaleFactor: 1,
@@ -91,8 +93,8 @@ export default class LocalChrome implements Chrome {
       fitWindow: false, // as we cannot resize the window, `fitWindow: false` is needed in order for the viewport to be resizable
     }
 
-    const { host, port } = this.options.cdp
-    const versionResult = await CDP.Version({ host, port })
+    const {host, port} = this.options.cdp
+    const versionResult = await CDP.Version({host, port})
     const isHeadless = versionResult['User-Agent'].includes('Headless')
 
     if (viewport.height && viewport.width) {
@@ -121,17 +123,17 @@ export default class LocalChrome implements Chrome {
   }
 
   async process<T extends any>(command: Command): Promise<T> {
-    const { runtime } = await this.runtimeClientPromise
+    const {runtime} = await this.runtimeClientPromise
 
     return (await runtime.run(command)) as T
   }
 
   async close(): Promise<void> {
-    const { client } = await this.runtimeClientPromise
+    const {client} = await this.runtimeClientPromise
 
     if (this.options.cdp.closeTab) {
-      const { host, port } = this.options.cdp
-      await CDP.Close({ host, port, id: client.target.id })
+      const {host, port} = this.options.cdp
+      await CDP.Close({host, port, id: client.target.id})
     }
 
     if (this.chromeInstance) {

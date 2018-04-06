@@ -38,6 +38,7 @@ export interface CDPOptions {
   port?: number // 9222
   secure?: boolean // false
   closeTab?: boolean // true
+  targetId?: string // empty string
 }
 
 export interface ChromelessOptions {
